@@ -1,0 +1,142 @@
+/* Cost Explanation Styles */
+.cost-explanation {
+    margin-top: 2rem;
+    padding: 2rem;
+    background: rgba(6, 182, 212, 0.05);
+    border: 1px solid rgba(6, 182, 212, 0.2);
+    border-radius: 16px;
+}
+
+.explanation-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--primary);
+}
+
+.explanation-summary {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.impact-factors {
+    margin: 1.5rem 0;
+}
+
+.impact-factors h4 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.factors-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(15, 23, 42, 0.3);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.factors-table thead {
+    background: rgba(6, 182, 212, 0.1);
+}
+
+.factors-table th,
+.factors-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(6, 182, 212, 0.1);
+}
+
+.factors-table th {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.factors-table td {
+    color: var(--text-secondary);
+}
+
+.factors-table .amount {
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: right;
+}
+
+.impact-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.impact-badge.impact-high {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--danger);
+}
+
+.impact-badge.impact-very-high {
+    background: rgba(239, 68, 68, 0.3);
+    color: var(--danger);
+    font-weight: 600;
+}
+
+.impact-badge.impact-medium {
+    background: rgba(245, 158, 11, 0.2);
+    color: var(--warning);
+}
+
+.impact-badge.impact-positive {
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--success);
+}
+
+.insurance-breakdown {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+.insurance-breakdown h4 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.breakdown-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.breakdown-item {
+    padding: 1rem;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.breakdown-item.highlight {
+    background: rgba(6, 182, 212, 0.1);
+    border-color: rgba(6, 182, 212, 0.4);
+}
+
+.breakdown-item .label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.breakdown-item .value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.breakdown-item .value.success {
+    color: var(--success);
+}

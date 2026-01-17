@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cost Prediction Treatment System</title>
+    <meta name="description"
+        content="Advanced medical cost prediction using ensemble learning with interactive visualizations">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Three.js 3D Background -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="title">
+                    <span class="title-gradient">Cost Prediction</span>
+                    <span class="title-light">Treatment System</span>
+                </h1>
+                <p class="subtitle">Powered by Advanced Ensemble Machine Learning</p>
+            </div>
+            <div class="auth-buttons" id="authButtons">
+                <a href="login.html" class="auth-btn" id="loginLink">Login</a>
+                <a href="signup.html" class="auth-btn auth-btn-primary" id="signupLink">Sign Up</a>
+                <div class="user-info" id="userInfo" style="display: none;">
+                    <span class="user-welcome" id="userWelcome">Welcome, User!</span>
+                    <a href="dashboard.html" class="auth-btn">Dashboard</a>
+                    <button class="auth-btn auth-btn-logout" id="logoutBtnHeader">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Mode Selector -->
+        <section class="mode-selector-section">
+            <div class="mode-selector glass-card">
+                <h2 class="mode-selector-title">Choose Your Experience</h2>
+                <div class="mode-buttons">
+                    <button class="main-mode-btn" id="main-mode-chat">
+                        <span class="mode-icon"></span>
+                        <span class="mode-name">AI Chat Assistant</span>
+                        <span class="mode-desc">Ask questions about costs & health</span>
+                    </button>
+                    <button class="main-mode-btn active" id="main-mode-predict">
+                        <span class="mode-icon"></span>
+                        <span class="mode-name">Cost Prediction</span>
+                        <span class="mode-desc">Fill form for instant estimate</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Chat Assistant Section -->
+            <section class="chat-section glass-card hidden" id="chat-section">
+                <h2 class="section-title">
+                    AI Health Assistant
+                </h2>
+
+                <div class="chat-container">
+                    <!-- Mode Toggle -->
+                    <div class="chat-mode-toggle">
+                        <button class="mode-btn active" id="mode-text"> Text Message</button>
+                        <button class="mode-btn" id="mode-options"> Quick Options</button>
+                    </div>
+
+                    <!-- Chat Messages -->
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="chat-message">
+                            <div class="message-avatar ai"></div>
+                            <div class="message-content ai">
+                                Hello! I'm your AI health assistant. I can help you understand medical cost predictions,
+                                health factors, and insurance options. You can either type a question or select from
+                                quick options!
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input Container -->
+                    <div class="chat-input-container">
+                        <!-- Text Input Mode -->
+                        <div class="chat-text-input" id="text-input-mode">
+                            <input type="text" id="chat-input"
+                                placeholder="Ask me anything about health costs, insurance, or lifestyle..."
+                                autocomplete="off" />
+                            <button class="send-btn" id="send-btn">
+                                <span>Send</span>
+                                <span></span>
+                            </button>
+                        </div>
+
+                        <!-- Options Mode -->
+                        <div class="chat-options hidden" id="options-mode">
+                            <button class="option-btn" data-option="quick_estimate">
+                                Quick Cost Estimate
+                            </button>
+                            <button class="option-btn" data-option="health_tips">
+                                Health Tips
+                            </button>
+                            <button class="option-btn" data-option="insurance_info">
+                                Insurance Information
+                            </button>
+                            <button class="option-btn" data-option="cost_factors">
+                                Cost Factors Explained
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Prediction Section -->
+            <section class="prediction-section glass-card" id="prediction-section">
+                <h2 class="section-title">
+                    Patient Cost Prediction
+                </h2>
+
+                <form id="prediction-form" class="prediction-form">
+                    <!-- Other Diseases (Optional) -->
+                    <div class="disease-input-section">
+                        <div class="form-group disease-group">
+                            <label for="other_disease">
+                                Other Diseases or Conditions (Optional)
+                                <span class="helper-text">If you have a disease not covered in our standard options
+                                    below, describe it here. Our AI will analyze and estimate costs.</span>
+                            </label>
+                            <textarea id="other_disease" rows="3"
+                                placeholder="E.g., Kidney stones, Crohn's disease, Psoriasis, etc..."
+                                class="disease-textarea"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <!-- Demographics -->
+                        <div class="form-group">
+                            <label for="age">Age</label>
+                            <input type="number" id="age" min="18" max="100" value="30" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="gender">Gender</label>
+                            <select id="gender" required>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bmi">BMI</label>
+                            <input type="number" id="bmi" min="10" max="50" step="0.1" value="25" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="city_type">City Type</label>
+                            <select id="city_type" required>
+                                <option value="Urban">Urban</option>
+                                <option value="Semi-Urban">Semi-Urban</option>
+                                <option value="Rural">Rural</option>
+                            </select>
+                        </div>
+
+                        <!-- Health Conditions -->
+                        <div class="form-group checkbox-group">
+                            <label>
+                                <input type="checkbox" id="smoker">
+                                <span>Smoker</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group checkbox-group">
+                            <label>
+                                <input type="checkbox" id="diabetes">
+                                <span>Diabetes</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group checkbox-group">
+                            <label>
+                                <input type="checkbox" id="hypertension">
+                                <span>Hypertension</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group checkbox-group">
+                            <label>
+                                <input type="checkbox" id="heart_disease">
+                                <span>Heart Disease</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group checkbox-group">
+                            <label>
+                                <input type="checkbox" id="asthma">
+                                <span>Asthma</span>
+                            </label>
+                        </div>
+
+                        <!-- Lifestyle -->
+                        <div class="form-group">
+                            <label for="physical_activity_level">Activity Level</label>
+                            <select id="physical_activity_level" required>
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="daily_steps">Daily Steps</label>
+                            <input type="number" id="daily_steps" min="0" max="30000" value="5000" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sleep_hours">Sleep Hours</label>
+                            <input type="number" id="sleep_hours" min="0" max="24" step="0.1" value="7" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="stress_level">Stress Level (1-10)</label>
+                            <input type="number" id="stress_level" min="1" max="10" value="5" required>
+                        </div>
+
+                        <!-- Healthcare -->
+                        <div class="form-group">
+                            <label for="doctor_visits_per_year">Doctor Visits/Year</label>
+                            <input type="number" id="doctor_visits_per_year" min="0" max="50" value="2" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hospital_admissions">Hospital Admissions</label>
+                            <input type="number" id="hospital_admissions" min="0" max="20" value="0" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="medication_count">Medications Count</label>
+                            <input type="number" id="medication_count" min="0" max="20" value="0" required>
+                        </div>
+
+                        <!-- Insurance -->
+                        <div class="form-group">
+                            <label for="insurance_type">Insurance Type</label>
+                            <select id="insurance_type" required>
+                                <option value="Private">Private</option>
+                                <option value="Government">Government</option>
+                                <option value="None">None</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="insurance_coverage_pct">Coverage %</label>
+                            <input type="number" id="insurance_coverage_pct" min="0" max="100" value="50" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="previous_year_cost">Previous Year Cost ($)</label>
+                            <input type="number" id="previous_year_cost" min="0" value="5000" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-predict" id="predict-btn">
+                        <span class="btn-text">Predict Annual Cost</span>
+                        <span class="btn-loader"></span>
+                    </button>
+                </form>
+
+                <!-- Prediction Result -->
+                <div id="prediction-result" class="prediction-result hidden">
+                    <div class="result-header">
+                        <h3>Prediction Results</h3>
+                    </div>
+                    <div class="result-content">
+                        <div class="result-main">
+                            <span class="result-label">Estimated Annual Cost</span>
+                            <span class="result-value" id="predicted-cost">$0</span>
+                        </div>
+                        <div class="result-models" id="model-predictions"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Visualizations Grid -->
+            <section class="visualizations-section">
+                <h2 class="section-title">
+                    Avg Health Cost Visualizations
+                </h2>
+
+                <div class="charts-grid">
+                    <!-- Line Chart -->
+                    <div class="chart-card glass-card">
+                        <h3 class="chart-title">Cost Trends by Age Group</h3>
+                        <div class="chart-container">
+                            <canvas id="line-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Bar Chart -->
+                    <div class="chart-card glass-card">
+                        <h3 class="chart-title">Cost by Insurance Type</h3>
+                        <div class="chart-container">
+                            <canvas id="bar-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Pie Chart -->
+                    <div class="chart-card glass-card">
+                        <h3 class="chart-title">Health Conditions Distribution</h3>
+                        <div class="chart-container">
+                            <canvas id="pie-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Area Chart -->
+                    <div class="chart-card glass-card">
+                        <h3 class="chart-title">Cost by City Type</h3>
+                        <div class="chart-container">
+                            <canvas id="area-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Scatter Chart - NEW -->
+                    <div class="chart-card glass-card">
+                        <h3 class="chart-title">Doctor Visits vs Annual Cost</h3>
+                        <div class="chart-container">
+                            <canvas id="scatter-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Polar Area Chart - NEW -->
+                    <div class="chart-card glass-card">
+                        <h3 class="chart-title">Cost by Gender & Smoking Status</h3>
+                        <div class="chart-container">
+                            <canvas id="polar-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="background.js"></script>
+    <script src="charts.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

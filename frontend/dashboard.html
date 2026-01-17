@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Cost Prediction System</title>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div class="header-content">
+                <h1>My Dashboard</h1>
+                <div class="user-menu">
+                    <span id="userName" class="user-name">Loading...</span>
+                    <button id="logoutBtn" class="btn-logout">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard-main">
+            <div class="welcome-card">
+                <h2>Welcome back, <span id="userNameDisplay">User</span>!</h2>
+                <p>View your medical cost prediction history below</p>
+                <a href="index.html" class="btn-primary">Make New Prediction</a>
+            </div>
+
+            <div class="history-section">
+                <div class="section-header">
+                    <h3>Prediction History</h3>
+                    <span id="historyCount" class="count-badge">0</span>
+                </div>
+
+                <div id="loadingState" class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Loading your predictions...</p>
+                </div>
+
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.5">
+                        <path
+                            d="M9 11H15M9 15H15M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" />
+                        <path d="M12 7V13" />
+                    </svg>
+                    <h4>No predictions yet</h4>
+                    <p>Make your first prediction to see it here</p>
+                    <a href="index.html" class="btn-secondary">Get Started</a>
+                </div>
+
+                <div id="historyGrid" class="history-grid"></div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000';
+
+        const token = localStorage.getItem('token');
+        const userInfo = JSON.parse(localStorage.getItem('user') || '{}');
+
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        document.getElementById('userName').textContent = userInfo.name || userInfo.email || 'User';
+        document.getElementById('userNameDisplay').textContent = userInfo.name || 'User';
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        });
+
+        async function loadPredictions() {
+            const loadingState = document.getElementById('loadingState');
+            const emptyState = document.getElementById('emptyState');
+            const historyGrid = document.getElementById('historyGrid');
+            const historyCount = document.getElementById('historyCount');
+
+            try {
+                const response = await fetch(`${API_URL}/api/users/predictions?limit=20`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                loadingState.style.display = 'none';
+
+                if (!data.success) {
+                    if (response.status === 401) {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        window.location.href = 'login.html';
+                        return;
+                    }
+                    throw new Error(data.error);
+                }
+
+                const predictions = data.predictions || [];
+                historyCount.textContent = predictions.length;
+
+                if (predictions.length === 0) {
+                    emptyState.style.display = 'flex';
+                    return;
+                }
+
+                historyGrid.innerHTML = predictions.map(pred => `
+                    <div class="prediction-card">
+                        <div class="card-header">
+                            <div class="card-date">${new Date(pred.timestamp).toLocaleString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })}</div>
+                            <div class="card-badge">Prediction</div>
+                        </div>
+                        
+                        <div class="card-body">
+                            <div class="cost-display">
+                                <div class="cost-label">Predicted Annual Cost</div>
+                                <div class="cost-value">₹${pred.prediction_inr ? pred.prediction_inr.toLocaleString('en-IN', { maximumFractionDigits: 0 }) : 'N/A'}</div>
+                                <div class="cost-usd">${pred.prediction ? '$' + pred.prediction.toLocaleString('en-US', { maximumFractionDigits: 0 }) : ''}</div>
+                            </div>
+                            
+                            <div class="details-grid">
+                                ${pred.input_data ? `
+                                    <div class="detail-item">
+                                        <span class="detail-label">Age</span>
+                                        <span class="detail-value">${pred.input_data.age} years</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">BMI</span>
+                                        <span class="detail-value">${pred.input_data.bmi?.toFixed(1)}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Insurance</span>
+                                        <span class="detail-value">${pred.input_data.insurance_type}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Coverage</span>
+                                        <span class="detail-value">${pred.input_data.insurance_coverage_pct}%</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                loadingState.style.display = 'none';
+                historyGrid.innerHTML = `
+                    <div class="error-card">
+                        <p>Failed to load predictions: ${error.message}</p>
+                        <button onclick="loadPredictions()" class="btn-secondary">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        loadPredictions();
+    </script>
+</body>
+
+</html>
